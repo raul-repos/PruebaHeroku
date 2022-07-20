@@ -36,7 +36,7 @@ let notes = [
   },
 ]
 
-console.log("notas:", phoneEntry.length)
+console.log("notas:", phoneEntry[1])
 let totalNotes = phoneEntry.length
 
 app.use(morgan("tiny"))
@@ -53,20 +53,31 @@ app.get("/api/notes", (request, response) => {
 
 app.get("/api/notes/info", (request, response) => {
   const date = new Date()
-  response.send(`
-  <h1>Hay un total de ${totalNotes} notas</h1>
+  phoneEntry.find().then((notes) => {
+    response.send(`<h1>Hay un total de ${notes.length} notas</h1>
   <p> ${date} </p>`)
+  })
 })
 
 app.get("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id)
-  const note = notes.find((note) => note.id === id)
-  if (note) {
-    response.json(note)
-  } else {
-    response.status(404).end()
+  // const id = Number(request.params.id)
+  // const note = notes.find((note) => note.id === id)
+  try {
+    phoneEntry.findById(request.params.id).then((note) => response.json(note))
+  } catch {
+    ;(error) => {
+      console.log("Ha habido un error:", error)
+      response.status(404).end()
+    }
   }
+  // if (note) {
+  //   response.json(note)
+  // } else {
+  //   response.status(404).end()
+  // }
 })
+
+// -----     NO FUNCIONA EL DELETE    ------
 
 app.delete("/api/notes/:id", (request, response) => {
   // const id = Number(request.params.id)
