@@ -5,7 +5,6 @@ const args = process.argv
 const noteSchema = new mongoose.Schema({
   name: String,
   number: String,
-  //   id: Number,
 })
 
 const phoneEntry = mongoose.model("Entry", noteSchema)

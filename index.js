@@ -1,7 +1,9 @@
+require("dotenv").config()
 const express = require("express")
 const app = express()
 const morgan = require("morgan")
 const cors = require("cors")
+const phoneEntry = require("./models/entry.js")
 
 morgan.token("content", (req, res) => {
   return JSON.stringify(req.body)
@@ -34,7 +36,8 @@ let notes = [
   },
 ]
 
-let totalNotes = notes.length
+console.log("notas:", phoneEntry.length)
+let totalNotes = phoneEntry.length
 
 app.use(morgan("tiny"))
 
@@ -43,7 +46,9 @@ app.get("/", (request, response) => {
 })
 
 app.get("/api/notes", (request, response) => {
-  response.json(notes)
+  phoneEntry.find().then((notes) => {
+    response.json(notes)
+  })
 })
 
 app.get("/api/notes/info", (request, response) => {
@@ -64,9 +69,14 @@ app.get("/api/notes/:id", (request, response) => {
 })
 
 app.delete("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id)
-  notes = notes.filter((note) => note.id !== id)
-  response.status(204).end()
+  // const id = Number(request.params.id)
+
+  phoneEntry.findById(request.params.id).then((note) => {
+    response.json(note)
+  })
+
+  // notes = notes.filter((note) => note.id !== id)
+  // response.status(204).end()
 })
 
 app.post(
@@ -88,19 +98,19 @@ app.post(
         .json({ error: "Ya hay un post con el mismo contenido" })
     }
 
-    const note = {
+    const note = new phoneEntry({
       name: body.name,
       number: body.number,
       date: new Date(),
-      id: generateId(),
-    }
+      // id: generateId(),
+    })
 
-    notes = notes.concat(note)
-
-    response.json(note)
+    note.save().then((savedNote) => {
+      response.json(savedNote)
+    })
   }
 )
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
