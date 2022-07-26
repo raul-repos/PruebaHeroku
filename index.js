@@ -97,7 +97,7 @@ app.delete("/api/notes/:id", (request, response) => {
 app.post(
   "/api/notes/",
   morgan(" :method :url :content :response-time ms"),
-  (request, response) => {
+  (request, response, next) => {
     const body = request.body
 
     // if (!body.name && !body.number) {
@@ -120,9 +120,12 @@ app.post(
       // id: generateId(),
     })
 
-    note.save().then((savedNote) => {
-      response.json(savedNote)
-    })
+    note
+      .save()
+      .then((savedNote) => {
+        response.json(savedNote)
+      })
+      .catch((error) => next(error))
   }
 )
 
@@ -135,7 +138,10 @@ app.put("/api/notes/:id", (request, response, next) => {
   phoneEntry
     .findByIdAndUpdate(request.params.id, note, { new: true })
     .then((updatedNote) => response.json(updatedNote))
-    .catch((error) => next(error))
+    .catch((error) => {
+      console.log(error.response.data.error)
+      next(error)
+    })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -145,8 +151,11 @@ app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
   console.log(error.message)
+
   if (error.name === " CastError") {
     return response.status(400).send({ error: "malformed id" })
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message })
   }
   next(error)
 }

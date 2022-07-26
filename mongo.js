@@ -2,11 +2,6 @@ const mongoose = require("mongoose")
 
 const args = process.argv
 
-const noteSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-})
-
 const phoneEntry = mongoose.model("Entry", noteSchema)
 
 let state = null

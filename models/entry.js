@@ -13,8 +13,15 @@ mongoose
   })
 
 const noteSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 4,
+    required: true,
+  },
+  number: {
+    type: String,
+    required: false,
+  },
 })
 
 noteSchema.set("toJSON", {
