@@ -1,6 +1,6 @@
 const entriesRouter = require("express").Router()
 
-const { response } = require("express")
+const { res } = require("express")
 const Contact = require("../models/contact")
 
 // Ruta para pillar todas las entradas
@@ -8,7 +8,7 @@ const Contact = require("../models/contact")
 // La URL es RELATIVA a la url aportada donde se use el módulo
 entriesRouter.get("/", (req, res) => {
   Contact.find({}).then((entries) => {
-    response.json(entries)
+    res.json(entries)
   })
 })
 
@@ -16,7 +16,7 @@ entriesRouter.get("/", (req, res) => {
 entriesRouter.get("/:id", (req, res, next) => {
   Contact.findById(req.params.id)
     .then((entry) => {
-      entry ? response.json(entry) : response.status(404).end()
+      entry ? res.json(entry) : res.status(404).end()
     })
     .catch((error) => next(error))
 })
@@ -32,7 +32,7 @@ entriesRouter.post("/", (req, res, next) => {
   entry
     .save()
     .then((savedEntry) => {
-      response.json(savedEntry)
+      res.json(savedEntry)
     })
     .catch((error) => next(error))
 })
@@ -40,7 +40,7 @@ entriesRouter.post("/", (req, res, next) => {
 // Delete de una entrada
 entriesRouter.delete("/:id", (req, res, next) => {
   Contact.findByIdAndRemove(req.params.id)
-    .then(() => response.status(204).end())
+    .then(() => res.status(204).end())
     .catch((error) => next(error))
 })
 
@@ -52,9 +52,9 @@ entriesRouter.put("/:id", (req, res, next) => {
     name: body.name,
     number: body.number,
   })
-  // Necesita el ID para hacer update, la info que se updatea y (optional) {new:true} para que el response sea la nota actualizada, no la nota antes de actualizar
+  // Necesita el ID para hacer update, la info que se updatea y (optional) {new:true} para que el res sea la nota actualizada, no la nota antes de actualizar
   Contact.findByIdAndUpdate(req.params.id, entry, { new: true })
-    .then((updatedEntry) => response.json(updatedEntry))
+    .then((updatedEntry) => res.json(updatedEntry))
     .catch((error) => next(error))
 })
 
