@@ -7,7 +7,7 @@ const noteSchema = new mongoose.Schema({
     required: true,
   },
   number: {
-    type: String,
+    type: Number,
     required: false,
   },
 })

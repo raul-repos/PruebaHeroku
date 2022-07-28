@@ -48,10 +48,10 @@ entriesRouter.delete("/:id", (req, res, next) => {
 entriesRouter.put("/:id", (req, res, next) => {
   const body = req.body
 
-  const entry = new Contact({
+  const entry = {
     name: body.name,
     number: body.number,
-  })
+  }
   // Necesita el ID para hacer update, la info que se updatea y (optional) {new:true} para que el res sea la nota actualizada, no la nota antes de actualizar
   Contact.findByIdAndUpdate(req.params.id, entry, { new: true })
     .then((updatedEntry) => res.json(updatedEntry))
